@@ -1,0 +1,2 @@
+ovos-plugin-manager~=0.0, >=0.0.22a6
+click
