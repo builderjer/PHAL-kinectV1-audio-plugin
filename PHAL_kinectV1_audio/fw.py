@@ -14,6 +14,7 @@ def install_bin_script(install_path=None):
     install_path = install_path or SCRIPT_BIN_PATH
     local_bin_script = abspath(dirname(__file__) + "/overlays/usr/bin/ovos_kinect_upload_fw")
     if not _check_for_bin(install_path):
+        # Check for /usr/bin
         if not isdir(dirname(install_path)):
             x = run(f'sudo mkdir -p {dirname(install_path)}', shell=True, capture_output=True)
             if x.returncode != 0:
@@ -64,14 +65,12 @@ def upload_fw(bin_path=None, fw_path=None):
     return True
 
 def check_for_path():
-    try:
-        import ovos_kinect_fw
-    except ImportError:
-
+    x = run("ovos_kinect_fw", shell=True, capture_output=True)
+    if x.returncode != 0:
+        # ovos_kinect_fw is not in PATH
         x = run(f"sudo ln -s /home/mycroft/.local/bin/ovos_kinect_fw /usr/bin", shell=True, capture_output=True)
         if x.returncode != 0:
             LOG.error(f"Could not create systemlink: {x.stderr.strip().decode()}")
             return False
         LOG.info("Created systemlink in /usr/bin")
-        return True
     return True

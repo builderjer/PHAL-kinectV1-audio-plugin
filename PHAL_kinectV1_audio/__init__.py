@@ -78,4 +78,6 @@ class KinectAudioPlugin(PHALPlugin):
             LOG.debug("Installed bin")
         if install_fw(fw_path):
             LOG.debug("Installed fw")
+        if check_for_path():
+            LOG.debug("ovos_kinect_fw avaliable")
 
