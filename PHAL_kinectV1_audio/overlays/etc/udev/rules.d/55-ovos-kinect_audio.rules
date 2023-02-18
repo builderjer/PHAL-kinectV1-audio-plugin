@@ -1,4 +1,4 @@
 # Rule to load the Kinect UAC firmware on the "generic" usb device
-ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="02ad", ENV{PULSE_PROFILE_SET}="kinect-audio.conf", RUN+="/usr/local/bin/ovos_kinect_fw upload"
+ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="02ad", ENV{PULSE_PROFILE_SET}="kinect-audio.conf", RUN+="/usr/bin/ovos_kinect_fw upload"
 
-ACTION=="remove", SUBSYSTEMS=="usb", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="02ad", ENV{PULSE_PROFILE_SET}="GeneralPlus.conf" RUN+="/usr/local/bin/ovos_kinect_fw remove"
+ACTION=="remove", SUBSYSTEMS=="usb", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="02ad", ENV{PULSE_PROFILE_SET}="GeneralPlus.conf" RUN+="/usr/bin/ovos_kinect_fw remove"

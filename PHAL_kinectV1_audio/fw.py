@@ -3,7 +3,7 @@ from os.path import isfile, isdir, abspath, dirname, basename
 from subprocess import run, PIPE
 from ovos_utils.log import LOG
 
-SCRIPT_BIN_PATH = "/usr/local/bin/ovos_kinect_fw_upload"
+SCRIPT_BIN_PATH = "/usr/bin/ovos_kinect_upload_fw"
 SCRIPT_FIRMWARE_PATH = "/usr/local/share/kinect/UACFirmware"
 
 def _check_for_bin(path_to_bin=None):
@@ -12,7 +12,7 @@ def _check_for_bin(path_to_bin=None):
 
 def install_bin_script(install_path=None):
     install_path = install_path or SCRIPT_BIN_PATH
-    local_bin_script = abspath(dirname(__file__) + "/overlays/usr/local/bin/ovos_kinect_fw")
+    local_bin_script = abspath(dirname(__file__) + "/overlays/usr/bin/ovos_kinect_upload_fw")
     if not _check_for_bin(install_path):
         if not isdir(dirname(install_path)):
             x = run(f'sudo mkdir -p {dirname(install_path)}', shell=True, capture_output=True)
@@ -38,7 +38,7 @@ def install_fw(install_path=None):
     local_fw = abspath(dirname(__file__) + "/firmware/UACFirmware")
     if not _check_for_fw(install_path):
         if not isdir(dirname(install_path)):
-            x = run(f"sudo mkdir -p {install_path}", shell=True, capture_output=True)
+            x = run(f"sudo mkdir -p {dirname(install_path)}", shell=True, capture_output=True)
             if x.returncode != 0:
                 LOG.error(f"Could not create directory for firmware: {x.stderr.strip().decode()}")
                 return False
@@ -55,9 +55,22 @@ def install_fw(install_path=None):
 def upload_fw(bin_path=None, fw_path=None):
     bin_path = bin_path or SCRIPT_BIN_PATH
     fw_path = fw_path or SCRIPT_FIRMWARE_PATH
+    print(f"xxxxxxxx {bin_path} {fw_path}")
     x = run(f"{bin_path} {fw_path}", shell=True, capture_output=True)
     if x.returncode !=0:
         LOG.error(f"Could not upload fw to Kinect:  {x.stderr}")
         return False
     LOG.info("Uploaded fw to Kinect")
+    return True
+
+def check_for_path():
+    try:
+        import ovos_kinect_fw
+    except ImportError:
+        x = run(f"sudo ln -s /home/mycroft/.local/bin/ovos_kinect_fw /usr/bin", shell=True, capture_output=True)
+        if x.returncode != 0:
+            LOG.error(f"Could not create systemlink: {x.stderr}")
+            return False
+        LOG.info("Created systemlink in /usr/bin")
+        return True
     return True

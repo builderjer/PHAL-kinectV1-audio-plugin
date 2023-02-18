@@ -7,7 +7,7 @@ from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils.log import LOG
 
 from PHAL_kinectV1_audio.udev import install_rules
-from PHAL_kinectV1_audio.fw import install_bin_script, install_fw
+from PHAL_kinectV1_audio.fw import install_bin_script, install_fw, check_for_path, upload_fw
 
 OVOS_KINECT_FW_OPTIONS = ['add', 'remove', 'upload']
 
@@ -45,6 +45,7 @@ def ovos_kinect_fw(command, bin_path, fw_path):
         elif command == "upload":
             LOG.info("uploading firmware to kinect")
             if upload_fw(bin_path, fw_path):
+                LOG.debug("kinect firmware uploaded")
                 ovos_kinect_fw("add", bin_path, fw_path)
 
 
@@ -55,9 +56,11 @@ class KinectAudioPlugin(PHALPlugin):
         bin_path = self.config.get("bin_path")
         fw_path = self.config.get("fw_path")
         if install_rules(rule_path):
-            LOG.debug(f"Installed rules to {rule_path}")
+            LOG.debug("Installed rules")
         if install_bin_script(bin_path):
-            LOG.debug(f"Installed bin to {bin_path}")
+            LOG.debug("Installed bin")
         if install_fw(fw_path):
-            LOG.debug(f"Installed fw to {fw_path}")
+            LOG.debug("Installed fw")
+        if check_for_path():
+            LOG.debug("Created link")
 
