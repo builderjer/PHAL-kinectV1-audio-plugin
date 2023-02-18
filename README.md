@@ -1,6 +1,8 @@
 # Kinect Xbox V.1 audio plugin
 
-[There is a bug](#Bugs) that does not allow the firmware to upload on connection of the Kinect.
+[There is a bug](#Bugs) that does not allow the firmware to upload on connection of the Kinect. 
+
+[Open Issue](https://github.com/builderjer/PHAL-kinectV1-audio-plugin/issues/1}
 
 This plugin allows the Microsoft Kinect V.1 to be used as a microphone with OVOS
 It <strong>DOES NOT</strong> or is not needed with the windows verion of the Kinect.
@@ -13,6 +15,8 @@ This is for a USB/12v modified version of the origional Xbox Kinect.
 `pip install ./PHAL-kinectV1-audio-plugin`
 
 restart OVOS to load plugin
+
+[Bug fix to enable kinect](#Bugs)
 
 ### Install Overview
 
@@ -46,3 +50,4 @@ https://github.com/dev-0x7C6/kinect-audio-firmware
 
 udev rule does not load when the device is plugged in.  In order to upload the firmware, after plugging in the Kinect, run the command `ovos_kinect_fw upload` and the Kinect should be working as the microphone
 
+[Open Issue](https://github.com/builderjer/PHAL-kinectV1-audio-plugin/issues/1}
