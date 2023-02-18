@@ -72,6 +72,6 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.10'
     ],
-    entry_points={'ovos.plugin.kinectV1': PLUGIN_ENTRY_POINT,
+    entry_points={'ovos.plugin.phal': PLUGIN_ENTRY_POINT,
                   'console_scripts': [UDEV_RULE_FUNC]}
 )
