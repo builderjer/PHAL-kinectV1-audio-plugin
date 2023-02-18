@@ -25,10 +25,10 @@ def ovos_kinect_fw(command, bin_path, fw_path):
                 LOG.debug(f"No default source for pulse: {x.stderr.strip().decode()}")
             else:
                 try:
-                    environ["ORIG_PULSE_DEFALUT_SOURCE"] = x.stdout.strip().decode()
-                    LOG.debug(f"Saved environ['ORIG_PULSE_DEFALUT_SOURCE'] as {x.stdout.strip().decode()}")
+                    environ["ORIG_PULSE_DEFAULT_SOURCE"] = x.stdout.strip().decode()
+                    LOG.debug(f"Saved environ['ORIG_PULSE_DEFAULT_SOURCE'] as {x.stdout.strip().decode()}")
                 except Exception as e:
-                    environ["ORIG_PULSE_DEFALUT_SOURCE"] = "OpenVoiceOS.monitor"
+                    environ["ORIG_PULSE_DEFAULT_SOURCE"] = "OpenVoiceOS.monitor"
                     LOG.error(f"Could not save origional pulse source: {e}")
             # Get the device name
             x = run("pactl list sources", shell=True, capture_output=True)
@@ -50,8 +50,8 @@ def ovos_kinect_fw(command, bin_path, fw_path):
 
         elif command == "remove":
             LOG.info("removing pulse files")
-            LOG.debug(environ["ORIG_PULSE_DEFALUT_SOURCE"])
-            x = run(f"pactl set-default-source {environ['ORIG_PULSE_DEFALUT_SOURCE']}", shell=True, stdout=PIPE, stderr=PIPE)
+            LOG.debug(environ["ORIG_PULSE_DEFAULT_SOURCE"])
+            x = run(f"pactl set-default-source {environ['ORIG_PULSE_DEFAULT_SOURCE']}", shell=True, stdout=PIPE, stderr=PIPE)
             if x.returncode != 0:
                 LOG.error(f"Cannot set default source: {x.stderr.strip().decode()}")
 
