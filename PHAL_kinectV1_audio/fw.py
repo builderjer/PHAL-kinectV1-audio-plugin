@@ -56,7 +56,7 @@ def upload_fw(bin_path=None, fw_path=None):
     bin_path = bin_path or SCRIPT_BIN_PATH
     fw_path = fw_path or SCRIPT_FIRMWARE_PATH
     print(f"xxxxxxxx {bin_path} {fw_path}")
-    x = run(f"{bin_path} {fw_path}", shell=True, capture_output=True)
+    x = run(f"sudo {bin_path} {fw_path}", shell=True, capture_output=True)
     if x.returncode !=0:
         LOG.error(f"Could not upload fw to Kinect:  {x.stderr}")
         return False
@@ -67,9 +67,10 @@ def check_for_path():
     try:
         import ovos_kinect_fw
     except ImportError:
+
         x = run(f"sudo ln -s /home/mycroft/.local/bin/ovos_kinect_fw /usr/bin", shell=True, capture_output=True)
         if x.returncode != 0:
-            LOG.error(f"Could not create systemlink: {x.stderr}")
+            LOG.error(f"Could not create systemlink: {x.stderr.strip().decode()}")
             return False
         LOG.info("Created systemlink in /usr/bin")
         return True

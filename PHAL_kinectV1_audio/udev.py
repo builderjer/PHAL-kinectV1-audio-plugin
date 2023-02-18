@@ -10,7 +10,6 @@ def _check_for_rules(path_to_rule=None):
 
 def install_rules(path_to_rule=None):
     path_to_rule = path_to_rule or UDEV_RULES_PATH
-    LOG.debug(path_to_rule)
     if not _check_for_rules(path_to_rule):
         local_rule = abspath(dirname(__file__) + "/overlays/etc/udev/rules.d/55-ovos-kinect_audio.rules")
         if not isdir(dirname(path_to_rule)):
@@ -22,5 +21,10 @@ def install_rules(path_to_rule=None):
         if x.returncode != 0:
             LOG.error(f"Cannot copy rules to file: {x.stderr.strip().decode()}")
             return False
+        x = run(f"sudo udevadm control --reload && sudo udevadm trigger", shell=True, capture_output=True)
+        if x.returncode != 0:
+            LOG.error(f"Cannot reload udev: {x.stderr.strip().decode()}")
+            return False
+
     return True
 

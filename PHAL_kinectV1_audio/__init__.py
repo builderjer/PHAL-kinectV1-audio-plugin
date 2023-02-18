@@ -16,24 +16,37 @@ OVOS_KINECT_FW_OPTIONS = ['add', 'remove', 'upload']
 @click.option("--bin-path", default=None, help="path to fw upload bin")
 @click.option("--fw-path", default=None, help="path to fw")
 def ovos_kinect_fw(command, bin_path, fw_path):
+    # When Python 3.10 is standard, this can change to a switch
     if command in OVOS_KINECT_FW_OPTIONS:
-
-        pulse_source = "alsa_input.usb-Microsoft_Kinect_USB_Audio_B44886513430049B-01.input-4-channels"
         if command == "add":
             LOG.info("adding firmware and pulse files")
             x = run("pactl get-default-source", shell=True, capture_output=True)
             if x.returncode != 0:
-                LOG.error(f"No default source for pulse: {x.stderr.strip().decode()}")
+                LOG.debug(f"No default source for pulse: {x.stderr.strip().decode()}")
             else:
                 try:
                     environ["ORIG_PULSE_DEFALUT_SOURCE"] = x.stdout.strip().decode()
                     LOG.debug(f"Saved environ['ORIG_PULSE_DEFALUT_SOURCE'] as {x.stdout.strip().decode()}")
                 except Exception as e:
+                    environ["ORIG_PULSE_DEFALUT_SOURCE"] = "OpenVoiceOS.monitor"
                     LOG.error(f"Could not save origional pulse source: {e}")
-
-            x = run(f"pactl set-default-source {pulse_source}", shell=True, capture_output=True)
+            # Get the device name
+            x = run("pactl list sources", shell=True, capture_output=True)
             if x.returncode != 0:
-                LOG.error(f"Cannot set default source: {x.stderr.strip().decode()}")
+                LOG.error(f"Error getting pulse sources: {x.stderr.strip().decode()}")
+                return False
+            x = x.stdout.decode()
+            x = x.splitlines()
+            for line in x:
+                if "Name:" in line:
+                    if "Kinect_USB_Audio" in line:
+                        line = line.strip()
+                        line = line[6:]
+                        x = run(f"pactl set-default-source {line}", shell=True, capture_output=True)
+                        if x.returncode != 0:
+                            LOG.error(f"Cannot set default source: {x.stderr.strip().decode()}")
+                        else:
+                            LOG.info(f"Set pulse default source to {line}")
 
         elif command == "remove":
             LOG.info("removing pulse files")
@@ -46,7 +59,11 @@ def ovos_kinect_fw(command, bin_path, fw_path):
             LOG.info("uploading firmware to kinect")
             if upload_fw(bin_path, fw_path):
                 LOG.debug("kinect firmware uploaded")
-                ovos_kinect_fw("add", bin_path, fw_path)
+                x = run("ovos_kinect_fw add", shell=True, capture_output=True)
+                if x.returncode != 0:
+                    LOG.error(f"error after upload: {x.stderr.strip().decode()}")
+                    return False
+            return True
 
 
 class KinectAudioPlugin(PHALPlugin):
@@ -61,6 +78,4 @@ class KinectAudioPlugin(PHALPlugin):
             LOG.debug("Installed bin")
         if install_fw(fw_path):
             LOG.debug("Installed fw")
-        if check_for_path():
-            LOG.debug("Created link")
 
